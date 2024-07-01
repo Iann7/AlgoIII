@@ -1,0 +1,120 @@
+E=#Aristas
+V=#Nodos
+
+Arbol Generador Minimo
+    subset de las aristas de un grafo conexo y no dirigido
+    que conecta a todos los vertices entre si.
+
+
+    -AGM con peso minimo: lo mismo que el AGM con la condición 
+                          de que la suma de sus aristas es la 
+                          minima posible
+
+    Si no es conexo es un minimum spanning forest.
+
+    Algoritmos para plantear AGM:
+        Los dos son algoritmos greedy 
+        Prim y Kruskal corren en O(E*lg(V))
+        Prim on fibonacci heap corre en O(E+V*lg(V)) 
+        (mejor que la complejidad anterior cuando E>>V)
+        -Kruskal:
+            El algoritmo de Kruskal encuentra una 
+            arista segura para agregar al arbol 
+
+            Lo hace encontrando la arista no agregada
+            que tenga el minimo peso posible.
+
+            Utiliza una estructura de datos DISJOINT-SET
+            cada set disjunto contiene los vertices de un arbol
+            del bosque actual
+
+            FIND-SET(u) devuelve un representante del arbol del 
+            set que contiene a U.
+
+            La complejidad de Kruskal depende de la implementación de DISJOINT-SET
+            La implementación union-by-rank nos da
+            O(Elg*(E))
+            So |E|<|V*V| tenemos que
+            lg|E|=O(lg*(V))
+        -Prim:
+            Prim tiene la propiedad de que su invariante
+            siempre forma arboles, agrega vertices aislados al subarbol que tenemos actualmente.
+
+            -Utiliza priorityQueue 
+            -Opera de forma muy parecida a Dijkstra.
+            -Complejidad O(E*log(V))
+
+Caminos Minimos
+    Hay dos variantes del problema de camino minimo, Single source shortest path o All-pairs shortest paths 
+    SSSP: Dijkstra,Bellman-ford
+    APSP: Floyd-warshall,Johnson
+    Detección ciclos negativos: Floyd-warshall, Bellman-ford
+    Single source shortest paths:
+        -Bellman-ford: 
+            Admite aristas con peso negativos
+            Detecta ciclos negativos 
+            Relaja las aristas hasta conseguir el camino minimo
+            Complejidad es de O(V*V + V*E)
+        -Dijkstra:
+            No admite aristas con pesos negativos 
+            va agregando las aristas minimas que no estan en el arbol y las agrega al subarbol sumado al costo de su padre 
+            Complejidad: O((|E|+|V|)log|V|) Normal 
+                         O(V*V) Simple
+                         O(V*log(V)+E) Fibonacci 
+        -DAG-shortest path:
+            si estamos en un directed acyclcic graph podemos calcular SSSP de otra manera, 
+            consiguiendo el orden topologico del grafo partiendo de un vertice fuente
+            (se puede hacer tanto top down como bottom up)
+            la complejidad de hacer esto es O(V+E)
+            -BOTTOM UP: Empieza desde source e itera la long de la lista
+            -TOP DOWN: empieza desde las hojas y calcula el camino minimo para llegar a las hojas recursivamente
+    
+    All-pairs shortest paths
+        calcula el camino minimo de todo par de vertices psoible 
+        -Floyd-warshall
+            Complejidad O(V*V*V)
+            acepta aristas negativas pero no ciclos negativos   
+            calcula si hay un vertice intermedio de U a W que reduzca el costo 
+            para calcular si hay un ciclo negativo en floyd warshall itero sobre la "diagonal" de la matriz
+            (i.e, me fijo si el costo del nodo a si mismo) de ser menor que cero hay ciclo negativo.
+        -Algoritmo de Johnson
+            Nos conviene mucho mas que floyd-warshall para grafos esparsos
+            usa como subrutina tanto dijkstra como bellman ford
+            El algoritmo de dijkstra encuentra los APSP como subrutina siendo ejecutado V veces
+            Si g tiene aristas negativas pero no ciclos negativos computa un nuevo set de aristas 
+            que puedan correr en dijkstra
+            -corre bellman ford
+            -if ciclo negativo ret false
+            -else recomputar aristas para que corran en dijkstra
+            -corrrer dijsktra en cada vertice
+            -COMPLEJIDAD FINAL = O(V*V*log(V)+V*E) fibonacci heap
+                                 O(V*E*log(V)) binary min heap 
+
+Flujo Maximo 
+    tenemos una red de flujo G=(V,E) que tiene un source y un sink, cada arista tiene 
+    una capacidad no negativa C(u,v)>=0,el objetivo es enviar la mayor cantidad de flujo
+    desde el source hasta el sink.
+
+    El unico metodo que vimos para hacer esto es Ford-Fulkerson, especificamente Edmond-Karp
+    Ford-Fulkerson:
+        aumenta el valor del flujo empezando con un flujo=0,cada iteración
+        aumenta el flujo encontrando un "Augmenting path", i.e, un camino de S a T,
+        hace esto en un "grafo residual", donde se evalua el flujo actual de la arista,
+        la capacidad, y aristas negativas opuestas a las aristas comunes, cuyo obj es reducir 
+        flujo de una arista para darselo a otro si se encuentra un camino que incluya a esa arista.
+        
+        cuando no encuentra mas caminos devuelve el flujo actual.
+
+        Corte minimo: un corte cuya capacidad es minima sobre todos los cortes de la network
+        Complejidad ford Fulkerson=O(E*F)
+        
+        Edmond-Karp: implementación de ford Fulkerson que usa BFS para conseguir el augmenting path
+                     complejidad = min(O(E*F),O(V*E*E))
+    
+    problemas que podemos resolver con Flujo Maximo:
+        Matching Maximo
+        Edge cover
+        Vertex cover
+        
+
+
