@@ -13,6 +13,10 @@ Arbol Generador Minimo
     Si no es conexo es un minimum spanning forest.
 
     Algoritmos para plantear AGM:
+        MaxiMin = MAXImizar la arista de MINImo costo por la cuál pasas.
+        MiniMax = MINimizar la arista de MAXimo costo por la cual pasas.
+        AGM=>Minimax 
+        Si quiero calcular maximin "doy vuelta los costos" (i.e, los paso a negativo)
         Los dos son algoritmos greedy 
         Prim y Kruskal corren en O(E*lg(V))
         Prim on fibonacci heap corre en O(E+V*lg(V)) 
